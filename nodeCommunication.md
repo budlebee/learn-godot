@@ -67,6 +67,57 @@ func update_health(value):
     label.text = str(value)
 ```
 
+## Groups 사용 예제
+
+Groups 는 일종의 태깅 시스템임 (노드 레퍼런스들을 포함하고 있는 오브젝트나 어레이가 아니라). 비슷한 역할을 하는 애들을 `add_to_group()` 이나 `remove_from_group()` 함수를 이용해 동적으로 추가할 수 있음. 
+
+SceneTree 는 지속적으로 태그들을 추적하고, 또 get_nodes_in_group() 같은 함수로 특정 태그의 노드들을 찾아올 수 있음.
+
+갤러그 스타일의 스페이스 슈터 게임을 만든다 치자. 날아다니는 여러 종류의 적들이 있음. 여러 종류의 적들이 "스마트 폭탄" 기능이 활성화되면 전부 파괴되게끔 하고 싶음. 이런 경우 Groups 를 사용하면 편함.
+
+먼저 모든 적들을 "enemies" 그룹에 추가하자.
+
+```
+func _ready():
+    add_to_group("enemies")
+```
+
+모든 적들이 explode() 라는 함수를 이미 갖고 있다고 가정하자. 그럼 다음과 같은 코드를 써준다.
+
+```
+func activate_smart_bomb():
+    get_tree().call_group("enemies","explode")
+```
+
+## owner 사용하기
+
+해당 씬의 루트 노드는 오너를 갖고 있다. 오너는 복잡한 계층구조에서 자식노드가 시그널을 루트노드로 쉽게 보내는 방법을 제공한다.
+
+복잡한 UI 구조를 생각해보자. 엄청나게 네스팅돼있는 계층구조에서, 유저가 버튼을 눌렀고, 그것이 시그널을 UI씬의 루트노드로 보내야 되는 상황을 생각하자.
+
+CenterContainer
+-VBoxContainer
+--Button1
+--Button2
+--Button3
+
+CentorContainer
+```
+extends CenterContainer
+
+func _on_button_pressed(button_name):
+    print(button_name, " was pressed")
+```
+
+Button1
+```
+extends Button
+
+func _ready():
+    connect("pressed", owner, "_on_button_pressed", [name])
+```
+
+
 
 ## reference
 
